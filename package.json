@@ -3,6 +3,7 @@
   "productName": "Cinephoria Desktop",
   "version": "1.0.0",
   "description": "Desktop version of Cinephoria movie platform",
+  "type": "module",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
@@ -10,7 +11,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "eslint src --color",
-    "dev": "concurrently \"npm run start:react\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron-forge start\"",
+    "dev": "concurrently \"npm run start:react\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development npx electron .\"",
     "start:react": "cd ../client && npm start",
     "build:react": "cd ../client && npm run build",
     "build": "npm run build:react && electron-forge package",
@@ -23,31 +24,45 @@
     "forge": {
       "make_targets": {
         "win32": [
-          "squirrel"
+          "squirrel",
+          "zip"
         ],
         "darwin": [
-          "zip"
+          "zip",
+          "dmg"
         ],
         "linux": [
           "deb",
-          "rpm"
+          "rpm",
+          "zip"
         ]
       },
       "electronPackagerConfig": {
-        "packageManager": "npm"
+        "packageManager": "npm",
+        "extraResource": [
+          "../client/build"
+        ],
+        "ignore": [
+          "node_modules/(?!(electron-squirrel-startup))"
+        ]
       },
       "electronWinstallerConfig": {
-        "name": "electron_app"
+        "name": "cinephoria_desktop",
+        "setupExe": "Cinephoria-Desktop-Setup.exe"
       },
-      "electronInstallerDebian": {},
-      "electronInstallerRedhat": {},
+      "electronInstallerDebian": {
+        "productName": "Cinephoria Desktop"
+      },
+      "electronInstallerRedhat": {
+        "productName": "Cinephoria Desktop"
+      },
       "github_repository": {
-        "owner": "",
-        "name": ""
+        "owner": "goyounes",
+        "name": "cinephoria-desktop"
       },
       "windowsStoreConfig": {
-        "packageName": "",
-        "name": "electronapp"
+        "packageName": "CinephoriaDesktop",
+        "name": "Cinephoria Desktop"
       }
     }
   },
@@ -61,8 +76,8 @@
     "babel-preset-react": "^6.24.1",
     "concurrently": "^9.2.1",
     "cross-env": "^10.0.0",
+    "electron": "^38.0.0",
     "electron-forge": "^5.2.4",
-    "electron-prebuilt-compile": "8.2.0",
     "eslint": "^3.19.0",
     "eslint-config-airbnb": "^15.1.0",
     "eslint-plugin-import": "^2.32.0",
