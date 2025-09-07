@@ -38,7 +38,10 @@ const createWindow = () => {
     mainWindow.webContents.openDevTools();
   } else {
     // In production, load from built React files
-    mainWindow.loadFile(path.join(__dirname, '../../client/build/index.html'));
+    const buildPath = app.isPackaged 
+      ? path.join(process.resourcesPath, 'client/build/index.html')
+      : path.join(__dirname, '../../client/build/index.html');
+    mainWindow.loadFile(buildPath);
   }
 
   // Show window when ready to prevent flash

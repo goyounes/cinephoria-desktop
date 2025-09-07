@@ -14,8 +14,9 @@
     "dev": "concurrently \"npm run start:react\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development npx electron .\"",
     "start:react": "cd ../client && npm start",
     "build:react": "cd ../client && npm run build",
-    "build": "npm run build:react && electron-forge package",
-    "dist": "npm run build:react && electron-forge make"
+    "build": "npm run build:react && npx electron-forge package",
+    "dist": "npm run build:react && npx electron-forge make",
+    "test:build": "npm run build:react && npx electron ."
   },
   "keywords": [],
   "author": "Younes",
