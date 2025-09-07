@@ -1,9 +1,12 @@
 import { app, BrowserWindow } from 'electron';
+import path from 'path';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) { // eslint-disable-line global-require
   app.quit();
 }
+
+const isDev = process.env.NODE_ENV === 'development';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -13,15 +16,30 @@ const createWindow = () => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     backgroundColor: '#ffffff',
-    width: 800,
-    height: 600,
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      enableRemoteModule: false
+    },
+    show: false
   });
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(`file://${__dirname}/index.html`);
+  // Load the app conditionally
+  if (isDev) {
+    // In development, load from React dev server
+    mainWindow.loadURL('http://localhost:3000');
+    mainWindow.webContents.openDevTools();
+  } else {
+    // In production, load from built React files
+    mainWindow.loadFile(path.join(__dirname, '../../client/build/index.html'));
+  }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // Show window when ready to prevent flash
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
@@ -52,6 +70,14 @@ app.on('activate', () => {
   if (mainWindow === null) {
     createWindow();
   }
+});
+
+// Security: Prevent new window creation
+app.on('web-contents-created', (event, contents) => {
+  contents.on('new-window', (navigationEvent, url) => {
+    navigationEvent.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
 });
 
 // In this file you can include the rest of your app's specific main process
