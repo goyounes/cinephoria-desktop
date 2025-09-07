@@ -1,15 +1,20 @@
 {
-  "name": "electron-app",
-  "productName": "electron-app",
+  "name": "cinephoria-desktop",
+  "productName": "Cinephoria Desktop",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Desktop version of Cinephoria movie platform",
   "main": "src/index.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint src --color"
+    "lint": "eslint src --color",
+    "dev": "concurrently \"npm run start:react\" \"wait-on http://localhost:3000 && cross-env NODE_ENV=development electron-forge start\"",
+    "start:react": "cd ../client && npm start",
+    "build:react": "cd ../client && npm run build",
+    "build": "npm run build:react && electron-forge package",
+    "dist": "npm run build:react && electron-forge make"
   },
   "keywords": [],
   "author": "Younes",
